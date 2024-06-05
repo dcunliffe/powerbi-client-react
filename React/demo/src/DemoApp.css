@@ -12,12 +12,6 @@ body {
 	margin: 0;
 }
 
-.container {
-	display: flex;
-	flex-direction: column;
-	height: 100vh;
-}
-
 .header {
 	background: #3476ae 0 0 no-repeat padding-box;
 	border: 1px solid #707070;
@@ -37,9 +31,6 @@ body {
 	text-align: center;
 }
 
-.position {
-	margin-top: 40vh;
-}
 
 .embed-report {
 	margin-top: 18px;

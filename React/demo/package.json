@@ -7,9 +7,11 @@
 	},
 	"license": "MIT",
 	"dependencies": {
+		"bootstrap": "^5.3.3",
 		"powerbi-client-react": "^1.4.0",
 		"powerbi-report-authoring": "^1.1",
-		"react-app-polyfill": "^1.0.6"
+		"react-app-polyfill": "^1.0.6",
+		"react-bootstrap": "^2.10.2"
 	},
 	"peerDependencies": {
 		"react": ">= 16.8"

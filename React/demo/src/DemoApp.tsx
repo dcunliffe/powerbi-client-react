@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-
+import 'bootstrap/dist/css/bootstrap.min.css'
 import React, { useState, useEffect } from 'react';
 import { models, Report, Embed, service, Page } from 'powerbi-client';
 import { IHttpPostMessageResponse } from 'http-post-message';
@@ -9,25 +9,40 @@ import 'powerbi-report-authoring';
 
 import { sampleReportUrl } from './public/constants';
 import './DemoApp.css';
+import { Card, Col, Container, Form, FormSelect, Nav, NavDropdown, Navbar, Row, Table, Toast, ToastContainer } from 'react-bootstrap';
+
+class ReidentifcationData {
+	skid!: string;
+	nhs!: string;
+}
 
 // Root Component to demonstrate usage of embedded component
-function DemoApp (): JSX.Element {
+function DemoApp(): JSX.Element {
 
 	// PowerBI Report object (to be received via callback)
 	const [report, setReport] = useState<Report>();
 	const [pseudo, setPseudo] = useState<string>();
 
+	const [embedUrl, setEmbedUrl] = useState<string>("https://app.powerbi.com/reportEmbed?reportId=13e17eb9-47a4-436a-9ef8-87738d04741d&config=eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly9XQUJJLVVLLVNPVVRILXJlZGlyZWN0LmFuYWx5c2lzLndpbmRvd3MubmV0IiwiZW1iZWRGZWF0dXJlcyI6eyJ1c2FnZU1ldHJpY3NWTmV4dCI6dHJ1ZX19");
+	const [token, setEmbedToken] = useState<string>("H4sIAAAAAAAEAB2Tt660ZgAF3-W2WCInS3-x5LRkWKAjLvkjJ8vv7iv3U8wZ6fzzY6d3D9Li5--fs12eTSLMlWtNBTy4cDGIUrO4XAmtNNN-w--VXUe3mDKOTECX2NjtJgmM2iUcQtJ6CySiIMiO5E1oy_CpWVp8fI0FkfZnNd-NYdonLWnhPI0f1Fc-gblpFqEbl6TDiypJz9sxASmwn2RitW-uR4RZvrw8M3fCIFU43ozTzsY8xOYs7tq58nuq6ExI9vxF_Q4PLaRxXymaj4OEGNIxRSoH0XDaKNwE1SbFfi_TLgUBtu2KgK5yxetvggcOEDdEP7_V0CIAqDOGQpW4mJ0jsXsP-0jvXJEy3eHR1IUqZxoI0qIpDWFe09rZ3HMbTjLz7DdLE0EBVDhCwrjwIw1nP3ci59-8vV1M7PQFgTDpwXKG0h2LpGzxV2hqUcb3Qif1q7CRyGqB5IyIkgWye3Xzo910YFwdJpezMasgyqi9jHeQNPN8gSqStQ9JM01H-dz2suC3kihjEc8MdGLLNUhcZmQ7pU45Od3eQPcGau2PMk-YQbGIPfAzJpOKr1mALVHE1g7M8gDPQgQxonRTm_fmjU-mfiZ37qXeix_xvXVTn4xpuDZRx6KdtI-X9kDzxyjS9OZGceVuuPWIXEfuQBItaFY0HAJGvvOoVa77Uly7IOTdDZ73Bl9fM2Rj67GesaDq9x5rizJacW3dtCXyzpAY0u9quxt0zCm9YXA0L44BuEShO0JJ_YyvQOuakS4tt_mi5Zgl24oV0KJjwr61MiTSgwtDj3IdyZPKj4rsBCNjlGUVos9L9_nV_ZwZ5wtfZCWs85F7oUJBc1IaXzNGicO52wH1aTAxMfFVQVaJLezio5FpvhdE_Ofnrx9-uacN6OX9e51oWlxlOzNl9ATGP8nAHIvyIOOQlkVqPetEe17zcWThBtCPS-bVMz8z6aKdWlW0HJwxy5y7QolQEWOECTFGHWO0aVl5Xh5fC8PvpTbVhR9VGkGHrdroXi6OjseTELrRWfbPiwi4dVC8lvxwSwa-82CO7OqRUKazSVQJg964-4IZgLlRrdvMewQfYsfaRwLLOgQr6rFGqGf0t3PpaWL2DXvdsuyxx_iC54Byy0zKer7RFW1O8Vd6DiP6HrX4ma156SPKwPR4VuWqt7XmHWPf8GRC916iNIEf06nXoPR6vrDkPtXcrs1GGvYPX1Xki-EMjRFz3jl6XHJmCeb8bRIRUvemz-vP_5nvqS4XNfytDHE3dlhgLq_MfOD0zFb8gM__Ka_5jum2L-UvpvfYCTvw4733yVQYCSveENMP-Ks_i-y0BV_DNHDoAQGfu6DNeMwTT-EW-4P5vAtl9LzYjYJRLyFRCKPTJhuh-kiTIxmIcPy6mpV7YTuaqxyKKK0abbRwPaue1JaQtmAEXih2WovAXydUctd_mAIJuk8UsKv85d4GhN4fpSfJog95atLxN06HdUQvlMY4BOWIlyrh810DnQig6gEpsWA5dd0BXho2lAYYGk86d2y06c2cUNjW8dXOF6Wz7sgNiPDIqrROwLz4m8XSPayXiYLB1byQiT8OwY_vkj6GACJ3T1EsDnyS-raNg9-iRh1U8OaT3Gekg-QiTuXXlsNBXRUIzMPOb-Z__wPAKgI5LgYAAA==.eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly9XQUJJLVVLLVNPVVRILXJlZGlyZWN0LmFuYWx5c2lzLndpbmRvd3MubmV0IiwiZXhwIjoxNzE3NjExMjg3LCJhbGxvd0FjY2Vzc092ZXJQdWJsaWNJbnRlcm5ldCI6dHJ1ZX0=");
+	const [page, setPage] = useState<string>("home");
+	const [reidentifcationData, setReidentifcationData] = useState<Array<ReidentifcationData>>([]);
+	const [reidReason, setReidReason] = useState<string>("");
+	const reasons = ["Direct Care", "Research", "Clinical", "Audit", "Service Improvement"];
+
+
+	const postbody = " { \"datasets\": [ { \"id\": \"d2f76d05-5b9c-44f1-b8f3-5294636a72f9\"} ],\"reports\": [ { \"id\": \"13e17eb9-47a4-436a-9ef8-87738d04741d\" }]}";
 	// Track Report embedding status
 	const [isEmbedded, setIsEmbedded] = useState<boolean>(false);
 
-    // Overall status message of embedding
+	// Overall status message of embedding
 	const [displayMessage, setMessage] = useState(`The report is bootstrapped. Click the Embed Report button to set the access token`);
 
 	// CSS Class to be passed to the embedded component
 	const reportClass = 'report-container';
 
 	// Pass the basic embed configurations to the embedded component to bootstrap the report on first load
-    // Values for properties like embedUrl, accessToken and settings will be set on click of button
+	// Values for properties like embedUrl, accessToken and settings will be set on click of button
 	const [sampleReportConfig, setReportConfig] = useState<models.IReportEmbedConfiguration>({
 		type: 'report',
 		embedUrl: undefined,
@@ -43,19 +58,23 @@ function DemoApp (): JSX.Element {
 	 * More events can be provided from here
 	 * https://docs.microsoft.com/en-us/javascript/api/overview/powerbi/handle-events#report-events
 	 */
-	const[eventHandlersMap, setEventHandlersMap] = useState<Map<string, (event?: service.ICustomEvent<any>, embeddedEntity?: Embed) => void | null>>(new Map([
-		['loaded', () => console.log('Report has loaded')],
-		['rendered', () => console.log('Report has rendered')],
+	const [eventHandlersMap, setEventHandlersMap] = useState<Map<string, (event?: service.ICustomEvent<any>, embeddedEntity?: Embed) => void | null>>(new Map([
+		['loaded', (event?: service.ICustomEvent<any>) => {
+			console.log(event);
+			console.log('Report has loaded');
+		}],
+		['rendered', (event?: service.ICustomEvent<any>) => {
+			console.log(event);
+			console.log('Report has rendered');
+			setDataSelectedEvent();
+		}],
 		['error', (event?: service.ICustomEvent<any>) => {
-				if (event) {
-
-
-					console.error(event.detail);
-				}
-			},
-		],
+			if (event) {
+				console.error(event.detail);
+			}
+		}],
 		['visualClicked', () => console.log('visual clicked')],
-		['pageChanged', (event) => console.log(event)],
+		['pageChanged', (event) => console.log(event)]
 	]));
 
 	useEffect(() => {
@@ -64,35 +83,18 @@ function DemoApp (): JSX.Element {
 		}
 	}, [report]);
 
-    /**
-     * Embeds report
-     *
-     * @returns Promise<void>
-     */
+	/**
+	 * Embeds report
+	 *
+	 * @returns Promise<void>
+	 */
 	const embedReport = async (): Promise<void> => {
-		console.log('Embed Report clicked');
-
-		// Get the embed config from the service
-		const reportConfigResponse = await fetch(sampleReportUrl);
-
-		if (reportConfigResponse === null) {
-			return;
-		}
-
-		if (!reportConfigResponse?.ok) {
-			console.error(`Failed to fetch config for report. Status: ${ reportConfigResponse.status } ${ reportConfigResponse.statusText }`);
-			return;
-		}
-
-		const reportConfig = await reportConfigResponse.json();
-		console.log(reportConfig.EmbedUrl);
+		//console.log(reportConfig.EmbedUrl);
 		// Update the reportConfig to embed the PowerBI report
 		setReportConfig({
 			...sampleReportConfig,
-			//embedUrl: reportConfig.EmbedUrl,
-			embedUrl: "https://app.powerbi.com/reportEmbed?reportId=13e17eb9-47a4-436a-9ef8-87738d04741d&config=eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly9XQUJJLVVLLVNPVVRILXJlZGlyZWN0LmFuYWx5c2lzLndpbmRvd3MubmV0IiwiZW1iZWRGZWF0dXJlcyI6eyJ1c2FnZU1ldHJpY3NWTmV4dCI6dHJ1ZX19",
-			//accessToken: reportConfig.EmbedToken.Token
-			accessToken: "H4sIAAAAAAAEAB2TtY7FBgAE_-VaRzJTpBRmZnZnfIZnZkf591zST7Ozmr9_7Oz5Tln58-dPJR7lcbjv5zH31eAa3LXck1Ki-CK6wFto5BMoRz5fGT9r1gUKeh37HGr4SpbWdUblJ35z1PnYGllZtt8ShjublpzQk_Eaw5VkBDR2OvrE0E1hK4huA4yBcR2bpgCUcP-q5F592rJwL03CLASxWO0CofTjgq-TMWQKo-Mcv2LF7TpYGFqZDPiTRAaOYkw4fo7YM_eWGwfT0x3n7FeA4TA3XCm9hCTuAeIo9G6ydoWCXjqzWvYMdIgdMAPoVlDD2Zb3KG2r0FF9yzEeNSA1qrw6rRLuHKi2mSdHAj7fR7hIEDbfsxaiwP8c8koxzt4MBBKqRn2peDTKl1Z8u1ocCIEpTre5Zftu9vBVIQwL-SBpWtcbXyems22PXLYhQynXJZ3xbsm0q6c-B9jkB2jPgRF5IXTtIskXvi9lIPVEa8F4yjHdrW1seiNZFKLCH7kqtdxEUHfOePXvgP3iEo-9SITzDzX3koS_UinhIZskcfXZxKKchOM-r3iSvng-DD1EtuxS-tdnkvGhpO1oVNxjOLuK5tGZi7XTQni4Z7XesHLhPDbG0AcKgrcQWPBs-NBJaL3AKcuFWmj5mTgsDLEoV7LrYKwt7pNcpiOPf8itmqrYNwxV3ibF0OrmtSQYys3G9MhlmX9Qq8VvWiev764SoFea-1htrQsjyyMz1qOk6cahxboIeM728Bx5UNllj7LKb7Dq5DrE25YuyKy8WhOaho6zKSKaQj5AIxBGUp7O8rdTGXyK1lsDX6n4FnhjnQAMmcNV1EFpDtvrAGszyJudM2fSL358z8CLIcikTOj6QFylJaDDUn_9_PHDrc-8T1r1_KZTLoYdXvxBY_psYs2l1Hn3RCwqbsS4b37hAunS9yoUnoKX1OoNizFuweS5M_1g67b4idb1SyzgDru7KElpn5hndN39rOogFL2nLVttlonf1rWT0x2GIPktIUGjXGU0U-jQuDDEI5PyLa7nG76TtGvx-Qa1m4Ka57xouGkhG1Ucp3QyMKxIU_DIWSYJPB4fUllIUFXBN69PWEa5l7ixnTdjTlcXmZZ7XFDk_BtdCw2QN9OMH-jTwyuxWwXqm8ZXSJD0DC8OyWYBg6sJ896XpDc74oAnQhK6uebTmiIkpbtRJvxXUG_oDtRdn7PWL_lVUuC6Yq2TzY7XOPEPzrhgo0Y1bTh__a_5mZtqVcJfywgbgKxq4sxsZQEnp4oYyzjzP-W1nzHbj7X6xRLaqpjdAuYJJ3hsNe1JFKZQIcPLvW6l-21k56txa-NZ2V2yXaTKQF5DSm18t18m-pQUz-yr4qXsIDg4BA4aiXQ3Q_JhaniNdQX4zLN3fVDKWMW9hT17dHm0o1QN_wXT10mvlD5nK386NwIu61qGvvF0CwJfkEfL6eCyJeZEFBlfGKHKwwfKEchxPJktOccCCorDLe7OEWhJ8GLRkAEitbBmniult3DbGhO18KU3PDCEq3FKZu2tos9I-Bx0Tu9T3_bNeQNPk7RtOw2iG08Hi5F76_kCkR7YGuvMsN5vkFMt33WPLL8GamzIKN2aB-gRWzyYe1ChRw_wmff1MBuYFar_74x__gUq4qOGLgYAAA==.eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly9XQUJJLVVLLVNPVVRILXJlZGlyZWN0LmFuYWx5c2lzLndpbmRvd3MubmV0IiwiZXhwIjoxNzE3NjA0Mzc3LCJhbGxvd0FjY2Vzc092ZXJQdWJsaWNJbnRlcm5ldCI6dHJ1ZX0="
+			embedUrl: embedUrl,
+			accessToken: token
 		});
 		setIsEmbedded(true);
 
@@ -100,56 +102,32 @@ function DemoApp (): JSX.Element {
 		setMessage('Use the buttons above to interact with the report using Power BI Client APIs.');
 	};
 
-    /**
-     * Hide Filter Pane
-     *
-     * @returns Promise<IHttpPostMessageResponse<void> | undefined>
-     */
-	const hideFilterPane = async (): Promise<IHttpPostMessageResponse<void> | undefined>  => {
-		// Check if report is available or not
-		if (!report) {
-			setDisplayMessageAndConsole('Report not available');
-			return;
-		}
-
-		// New settings to hide filter pane
-		const settings = {
-			panes: {
-				filters: {
-					expanded: false,
-					visible: false,
-				},
-			},
-		};
-
-		try {
-			const response: IHttpPostMessageResponse<void> = await report.updateSettings(settings);
-
-			// Update display message
-			setDisplayMessageAndConsole('Filter pane is hidden.');
-			return response;
-		} catch (error) {
-			console.error(error);
-			return;
-		}
-	};
-
-    /**
-     * Set data selected event
-     *
-     * @returns void
-     */
+	/**
+	 * Set data selected event
+	 *
+	 * @returns void
+	 */
 	const setDataSelectedEvent = () => {
-		setEventHandlersMap(new Map<string, (event?: service.ICustomEvent<any>, embeddedEntity?: Embed) => void | null> ([
+		setEventHandlersMap(new Map<string, (event?: service.ICustomEvent<any>, embeddedEntity?: Embed) => void | null>([
 			...eventHandlersMap,
 			['dataSelected', (event) => {
-				if(event){
+				if (event && event.detail.dataPoints[0]) {
 					console.log(event.detail.dataPoints[0].identity[0].equals)
 					setPseudo(event.detail.dataPoints[0].identity[0].equals)
+
+					var skid = event.detail.dataPoints[0].identity[0].equals;
+					var nhs = Math.random().toString().substr(2, 8);;
+
+
+					setReidentifcationData(reidentifcationData => {
+						if(reidentifcationData.find(x => x.skid === skid)) {
+							return reidentifcationData;
+						}	
+
+						return [...reidentifcationData, { skid: skid, nhs: nhs }]
+					})
 				}
 				console.log(event)
-
-
 			}
 			],
 		]));
@@ -157,51 +135,11 @@ function DemoApp (): JSX.Element {
 		setMessage('Data Selected event set successfully. Select data to see event in console.');
 	}
 
-    /**
-     * Change visual type
-     *
-     * @returns Promise<void>
-     */
-	const changeVisualType = async (): Promise<void> => {
-		// Check if report is available or not
-		if (!report) {
-			setDisplayMessageAndConsole('Report not available');
-			return;
-		}
-
-		// Get active page of the report
-		const activePage: Page | undefined = await report.getActivePage();
-
-		if (!activePage) {
-			setMessage('No Active page found');
-			return;
-		}
-
-		try {
-			// Change the visual type using powerbi-report-authoring
-			// For more information: https://docs.microsoft.com/en-us/javascript/api/overview/powerbi/report-authoring-overview
-			const visual = await activePage.getVisualByName('VisualContainer6');
-
-			const response = await visual.changeType('lineChart');
-
-			setDisplayMessageAndConsole(`The ${visual.type} was updated to lineChart.`);
-
-			return response;
-		}
-		catch (error) {
-			if (error === 'PowerBIEntityNotFound') {
-				console.log('No Visual found with that name');
-			} else {
-				console.log(error);
-			}
-		}
-	};
-
 	/**
-     * Set display message and log it in the console
-     *
-     * @returns void
-     */
+	 * Set display message and log it in the console
+	 *
+	 * @returns void
+	 */
 	const setDisplayMessageAndConsole = (message: string): void => {
 		setMessage(message);
 		console.log(message);
@@ -209,58 +147,177 @@ function DemoApp (): JSX.Element {
 
 	const controlButtons =
 		isEmbedded ?
-		<>
-			<button onClick = { changeVisualType }>
-				Change visual type</button>
+			<>
+			</>
+			:
+			<>
+				<Form>
+					<Form.Group>
+						<Form.Label>Embed Url</Form.Label>
+						<Form.Control type="text" value={embedUrl} onChange={(e) => setEmbedUrl(e.target.value)} />
+						<a href="https://learn.microsoft.com/en-us/rest/api/power-bi/reports/get-report#code-try-0" target="_blank">Link</a>
+					</Form.Group>
+					<Form.Group>
+						<Form.Label>Token</Form.Label>
+						<Form.Control as="textarea" rows={5} value={token} onChange={(e) => setEmbedToken(e.target.value)} />
+						<a href='https://learn.microsoft.com/en-us/rest/api/power-bi/embed-token/generate-token#code-try-0' target="_blank">Link</a>
+						{postbody}
+					</Form.Group>
+				</Form>
+				<button onClick={embedReport} className="embed-report">
+					Launch Report</button>
+				<div>
 
-			<button onClick = { hideFilterPane }>
-				Hide filter pane</button>
-
-			<button onClick = { setDataSelectedEvent }>
-				Set event</button>
-
-			<label className = "display-message">
-				{ displayMessage }
-			</label>
-		</>
-		:
-		<>
-			<label className = "display-message position">
-				{ displayMessage }
-			</label>
-
-			<button onClick = { embedReport } className = "embed-report">
-				Embed Report</button>
-		</>;
+				</div>
+			</>;
 
 	const header =
-		<div className = "header">Power BI Embedded React Component Demo</div>;
+		<div className="header">ISL Re-Identification Service</div>;
 
 	const reportComponent =
 		<PowerBIEmbed
-			embedConfig = { sampleReportConfig }
-			eventHandlers = { eventHandlersMap }
-			cssClassName = { reportClass }
-			getEmbeddedComponent = { (embedObject: Embed) => {
-				console.log(`Embedded object of type "${ embedObject.embedtype }" received`);
+			embedConfig={sampleReportConfig}
+			eventHandlers={eventHandlersMap}
+			cssClassName={reportClass}
+			getEmbeddedComponent={(embedObject: Embed) => {
+				console.log(`Embedded object of type "${embedObject.embedtype}" received`);
 				setReport(embedObject as Report);
-			} }
+			}}
 		/>;
 
 	const footer =
-		<div className = "footer">
-			<p>This demo is powered by Power BI Embedded Analytics</p>
-			<label className = "separator-pipe">|</label>
-			<img title = "Power-BI" alt = "PowerBI_Icon" className = "footer-icon" src = "./assets/PowerBI_Icon.png" />
-			<p>Explore our<a href = "https://aka.ms/pbijs/" target = "_blank" rel = "noreferrer noopener">Playground</a></p>
-			<label className = "separator-pipe">|</label>
-			<img title = "GitHub" alt = "GitHub_Icon" className = "footer-icon" src = "./assets/GitHub_Icon.png" />
-			<p>Find the<a href = "https://github.com/microsoft/PowerBI-client-react" target = "_blank" rel = "noreferrer noopener">source code</a></p>
+		<div className="footer">
+
 		</div>;
 
+	const getContent = () => {
+		switch (page) {
+			case "home":
+				return (
+					<Row>
+						<Col>
+							<Card onClick={() => setPage("Report")}>
+								<Card.Body>Report Based ReIdentifcation</Card.Body>
+							</Card>
+						</Col>
+						<Col>
+							<Card onClick={() => setPage("CSV")}>
+								<Card.Body>CSV File ReIdentifcation</Card.Body>
+							</Card>
+						</Col>
+						<Col>
+							<Card onClick={() => setPage("List")}>
+								<Card.Body>List ReIdentification</Card.Body>
+							</Card>
+						</Col>
+					</Row>
+				);
+
+			case "Report":
+				return (
+					<div className="container">
+						{controlButtons}
+						{isEmbedded ? reportComponent : null}
+					</div>
+				);
+			case "CSV":
+				return (
+					<div className="container">
+						CSV
+					</div>
+				);
+			case "List":
+				return (
+					<div className="container">
+						List
+					</div>
+				);
+			default:
+				return (
+					<div className="container">
+						OOPS
+					</div>
+				);
+		}
+
+	}
+
 	return (
-		<div className = "container">
-			{ header }
+		<>
+			<Navbar className="bg-body-tertiary">
+				<Container>
+					<Navbar.Brand href="#home">ISL Re-Identification Service</Navbar.Brand>
+					<Navbar.Collapse id="basic-navbar-nav">
+						<Nav>
+							<NavDropdown title="Re-identification Services" id="basic-nav-dropdown">
+								<Nav.Link href="#home">Reports</Nav.Link>
+								<Nav.Link href="#home">CSV File</Nav.Link>
+								<Nav.Link href="#home">Comma Seperated List</Nav.Link>
+							</NavDropdown>
+						</Nav>
+					</Navbar.Collapse>
+				</Container>
+			</Navbar>
+			<Container>
+				{getContent()}
+				{isEmbedded &&
+					<ToastContainer position='bottom-end'>
+						<Toast>
+							<Toast.Header>
+								<img src="holder.js/20x20?text=%20" className="rounded me-2" alt="" />
+								<strong className="me-auto">Reidentifcation</strong>
+							</Toast.Header>
+							<Toast.Body>
+								{reidReason == "" ? <>
+									Select Reason for Re-Identification
+									<Form>
+										<Form.Group>
+											<Form.Label>Reason</Form.Label>
+											<FormSelect onChange={(e) => {
+												setReidReason(e.target.value);
+											}}
+											>
+												<option value={""}>---Select Reason---</option>
+												{reasons.map((reason, index) => {
+													return (
+														<option key={index} value={reason}>{reason}</option>
+													);
+												})}
+											</FormSelect>
+										</Form.Group>
+									</Form>
+								</> :
+									<Table>
+										<thead>
+											<tr>
+												<th>SKID</th>
+												<th>NHS Number</th>
+											</tr>
+										</thead>
+										<tbody>
+											{reidentifcationData?.map((data, index) => {
+												return (
+													<tr key={index}>
+														<td>{data.skid}</td>
+														<td>{data.nhs}</td>
+													</tr>
+												);
+											})}
+										</tbody>
+									</Table>
+								}
+							</Toast.Body>
+						</Toast>
+					</ToastContainer>
+				}
+			</Container>
+		</>
+	);
+}
+
+export default DemoApp;
+
+/*<div className = "container">
 
 			<div className = "controls">
 				{ controlButtons }
@@ -272,8 +329,4 @@ function DemoApp (): JSX.Element {
 				{pseudo}
 			</div>
 			{ footer }
-		</div>
-	);
-}
-
-export default DemoApp;
+		</div>*/
